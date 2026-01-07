@@ -26,5 +26,6 @@ int main(void) {
 		arr[i] = ssdRead(i + 1);
 		printf("%d: %X\n", i+1, arr[i]);
 	}
-	
+	ssdWrite(1, 0x00000000);
+	printf("test: %X\n", ssdRead(1));
 }
