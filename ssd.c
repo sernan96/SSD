@@ -58,7 +58,7 @@ void ssdErase(int lbaNum) {
 
     if (start < 0 || start >= MAX_ADDRESS) {
         fprintf(stderr, "EraseError occured: invalid idx %d\n", lbaNum);
-        return;
+        return EXIT_FAILURE;
     }
 
     if (g_nand_f == NULL) {
@@ -72,11 +72,11 @@ void ssdErase(int lbaNum) {
         {
             perror("Erase fseek Failed");
             fclose(g_nand_f);
-            return;
+            return EXIT_FAILURE;
         }
         fprintf(g_nand_f, "0x%08X\n", 0xFFFFFFFFu);
     }
-    return;
+    return EXIT_SUCCESS;
 }
 
 int ssdInit() {
