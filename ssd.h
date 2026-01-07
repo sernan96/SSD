@@ -10,6 +10,7 @@
 #define PAGE_SIZE	 10
 #define LINE_SIZE	 11
 
+void ssdErase(int lbaNum);
 void ssdWrite(int lbaNum, uint32_t data);
 uint32_t ssdRead(int lbaNum);
 int ssdInit();

@@ -1,6 +1,6 @@
 #include "ssd.h"
 
-static FILE* g_nand_f = NULL;
+static FILE* g_nand_f = NULL, * g_result_f = NULL;
 
 void ssdWrite(int lbaNum, uint32_t data) {
     if (g_nand_f == NULL) {
@@ -31,7 +31,7 @@ void ssdWrite(int lbaNum, uint32_t data) {
 }
 
 uint32_t ssdRead(int lbaNum) {
-    if (g_nand_f == NULL) {
+    if (g_nand_f == NULL || g_result_f == NULL) {
         if (ssdInit() == NOFILE) return;
     }
 
@@ -44,13 +44,9 @@ uint32_t ssdRead(int lbaNum) {
 
     uint32_t output = (uint32_t)strtoul(line, NULL, 16); // 16진수로 변환
 
-    // result.txt에 결과 기록
-    FILE* res_fp = fopen("result.txt", "w");
-    if (res_fp == NULL) { printf("[ERROR] NOFILE: result.txt\n"); }
-
-    if (res_fp != NULL) {
-        fprintf(res_fp, "0x%08X", output);
-        fclose(res_fp);
+    if (g_result_f != NULL) {
+        fprintf(g_result_f, "0x%08X", output);
+        fclose(g_result_f);
     }
 
     return output;
@@ -62,12 +58,17 @@ int ssdInit() {
         fclose(g_nand_f);
         g_nand_f = NULL;
     }
+    if (g_result_f != NULL) {
+        fclose(g_result_f);
+        g_result_f = NULL;
+    }
 
     //파일을 읽기&쓰기, binary 모드로 열기: window/linux에서 둘 다 동작하도록
-    g_nand_f = fopen("nand.txt", "w+b"); 
+    g_nand_f = fopen("nand.txt", "w+b");
+    g_result_f = fopen("result.txt", "w+b");
 
-    if (g_nand_f == NULL) {
-        printf("[ERROR] NOFILE: nand.txt\n");
+    if (g_nand_f == NULL || g_result_f == NULL) {
+        printf("[ERROR] NOFILE\n");
         return NOFILE;
     }
 
@@ -79,8 +80,11 @@ int ssdInit() {
 }
 
 int ssdExit() {
-    if (g_nand_f == NULL) {
+    if (g_nand_f == NULL || g_result_f == NULL) {
         return NOFILEPTR;
     }
     fclose(g_nand_f);
+    fclose(g_result_f);
+    g_nand_f = NULL;
+    g_result_f = NULL;
 }
