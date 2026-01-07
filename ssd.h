@@ -7,8 +7,10 @@
 #define NOFILE		 1
 #define INIT_SUCCESS 2
 
-#define PAGE_SIZE	 10
-#define LINE_SIZE	 11
+#define PAGE_SIZE	    10
+#define LINE_SIZE	    11
+#define PAGES_PER_BLOCK 10
+#define MAX_ADDRESS     100
 
 void ssdErase(int lbaNum);
 void ssdWrite(int lbaNum, uint32_t data);

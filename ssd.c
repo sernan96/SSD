@@ -8,17 +8,17 @@ void ssdWrite(int lbaNum, uint32_t data) {
     }
 
     int targetLine = lbaNum;
-    long offset = (lbaNum) * (LINE_SIZE);             // PAGEÀÇ ÁÖ¼Ò * LINEÀÇ ±æÀÌ
+    long offset = (lbaNum) * (LINE_SIZE);             // PAGEï¿½ï¿½ ï¿½Ö¼ï¿½ * LINEï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     char checkBuf[LINE_SIZE];
     fseek(g_nand_f, offset, SEEK_SET);
-    fread(checkBuf, 1, 10, g_nand_f);               // °ª ºÎºÐ 10¹ÙÀÌÆ®¸¸ ÀÐ±â
+    fread(checkBuf, 1, 10, g_nand_f);               // ï¿½ï¿½ ï¿½Îºï¿½ 10ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ð±ï¿½
     fseek(g_nand_f, offset, SEEK_SET);
 
     uint32_t currentVal = (uint32_t)strtoul(checkBuf, NULL, 16);
     
-    // overwrite ¹æÁö
-    // Ãß°¡ °³¼± »çÇ×: STATE table µî Ãß°¡
+    // overwrite ï¿½ï¿½ï¿½ï¿½
+    // ï¿½ß°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: STATE table ï¿½ï¿½ ï¿½ß°ï¿½
     if (currentVal != 0x00000000) {
         printf("[ERROR] Overwrite: LBA %d is not empty (0x%08X).\n", lbaNum, currentVal);
         return;
@@ -40,9 +40,9 @@ uint32_t ssdRead(int lbaNum) {
 
     fseek(g_nand_f, offset, SEEK_SET);
 
-    if (fread(line, 1, 10, g_nand_f) != 10) return 0;   //ÀÐ±â ½ÇÆÐ
+    if (fread(line, 1, 10, g_nand_f) != 10) return 0;   //ï¿½Ð±ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    uint32_t output = (uint32_t)strtoul(line, NULL, 16); // 16Áø¼ö·Î º¯È¯
+    uint32_t output = (uint32_t)strtoul(line, NULL, 16); // 16ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯
 
     if (g_result_f != NULL) {
         fprintf(g_result_f, "0x%08X", output);
@@ -52,6 +52,32 @@ uint32_t ssdRead(int lbaNum) {
     return output;
 }
 
+void ssdErase(int lbaNum) {
+    int start = lbaNum * PAGES_PER_BLOCK;
+    int end = start + PAGES_PER_BLOCK;
+
+    if (start < 0 || start >= MAX_ADDRESS) {
+        fprintf(stderr, "EraseError occured: invalid idx %d\n", lbaNum);
+        return;
+    }
+
+    if (g_nand_f == NULL) {
+        perror("we don't have file: nand.txt\n");
+        return EXIT_FAILURE;
+    }
+
+    for (int i = start; i < end; i++)
+    {
+        if (fseek(g_nand_f, i * LINE_SIZE, SEEK_SET) != 0)
+        {
+            perror("Erase fseek Failed");
+            fclose(g_nand_f);
+            return;
+        }
+        fprintf(g_nand_f, "0x%08X\n", 0xFFFFFFFFu);
+    }
+    return;
+}
 
 int ssdInit() {
     if (g_nand_f != NULL) {
@@ -63,7 +89,7 @@ int ssdInit() {
         g_result_f = NULL;
     }
 
-    //ÆÄÀÏÀ» ÀÐ±â&¾²±â, binary ¸ðµå·Î ¿­±â: window/linux¿¡¼­ µÑ ´Ù µ¿ÀÛÇÏµµ·Ï
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½&ï¿½ï¿½ï¿½ï¿½, binary ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: window/linuxï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½
     g_nand_f = fopen("nand.txt", "w+b");
     g_result_f = fopen("result.txt", "w+b");
 
@@ -72,7 +98,7 @@ int ssdInit() {
         return NOFILE;
     }
 
-    //nand ÆÄÀÏ ÃÊ±âÈ­
+    //nand ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
     for (int i = 0; i < 100; i++) {
         fprintf(g_nand_f, "0x00000000\n"); 
     }
