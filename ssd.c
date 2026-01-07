@@ -24,7 +24,8 @@ void ssdWrite(int lbaNum, uint32_t data) {
         return;
     }
 
-    fprintf(g_nand_f, "0x%08X\n", data);
+    fprintf(g_nand_f, "0x%08X", data);
+    fflush(g_nand_f);
 
     return;
 }
@@ -47,7 +48,7 @@ uint32_t ssdRead(int lbaNum) {
 
     // result.txt에 결과 기록
     FILE* res_fp = fopen("result.txt", "w");
-    if (res_fp == NULL) { printf("[ERROR] NOFILE: nand.txt\n"); }
+    if (res_fp == NULL) { printf("[ERROR] NOFILE: result.txt\n"); }
 
     if (res_fp != NULL) {
         fprintf(res_fp, "0x%08X", output);
