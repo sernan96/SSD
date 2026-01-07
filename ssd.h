@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define PBA_FREE		-1
+#define PBA_INVALID		-2
 #define NOFILEPTR		0
 #define NOFILE			1
 #define INIT_SUCCESS	2
@@ -12,13 +14,11 @@
 #define LOGICAL_PAGES	100
 #define PHYSICAL_PAGES	120 //over-provisioning
 #define BUFFER_SIZE		10
+#define PAGES_PER_BLOCK	4
+#define BLOCK_COUNT		(PHYSICAL_PAGES / PAGES_PER_BLOCK)
 
 #define FULLREAD		20
 #define SINGLEREAD		21
-
-// LBA => PBA 변환 table
-// LtoP[0] = 5: LBA 0번 데이터가 nand.txt의 5번 page(줄)에 존재 
-int LtoP[LOGICAL_PAGES]; 
 
 typedef struct {
 	int is_free;			//1: write 가능, 0: write 불가능
@@ -39,6 +39,12 @@ typedef struct {
 	unsigned long erase_counts[PHYSICAL_PAGES];
 	unsigned long bufferCount;
 } SMARTStats;
+
+typedef struct {
+	int erase_count;    // 지운 횟수
+	int valid_count;    // 유효한 페이지 수
+	int is_free;        // 현재 비어있는 블록인지
+} BlockMeta;
 
 void ssdErase(int lbaNum);
 void ssdWrite(int lbaNum, uint32_t data);

@@ -14,14 +14,19 @@ static int rand_lba(void) {
     return rand() % LBA_MAX;
 }
 
+static int rand_blk(void) {
+    return rand() % BLOCK_COUNT;
+}
+
 int gen_test_scenario(const char* path, int line, unsigned seed) {
     FILE* f = fopen(path, "w");
     if (!f) return 0;
 
     srand(seed);
 
+    int blk_idx = 0;
     for (int i = 0; i < line; i++) {
-        int cmd = rand() % 5;
+        int cmd = rand() % 6;
 
         switch (cmd) {
         case 0: {
@@ -37,10 +42,10 @@ int gen_test_scenario(const char* path, int line, unsigned seed) {
             fprintf(f, "read %d\n", addr);
             break;
         }
-        case 2: {
+        case 2: {/*
             uint32_t data = rand_u32();
             ssdFullWrite(data);
-            fprintf(f, "fullwrite 0x%08X\n", data);
+            fprintf(f, "fullwrite 0x%08X\n", data);*/
             break;
         }
         case 3:
@@ -49,6 +54,11 @@ int gen_test_scenario(const char* path, int line, unsigned seed) {
             break;
         case 4:
             fprintf(f, "help\n");
+            break;
+        case 5:
+            blk_idx = rand_blk();
+            ssdEraseBlock(blk_idx);
+            fprintf(f, "erase\n");
             break;
         }
     }

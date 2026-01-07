@@ -1,105 +1,138 @@
 #include "ssd.h"
 
-static FILE* g_nand_f = NULL, * g_result_f = NULL;
-static uint32_t DRAM[10];
-static PageMetaData metaTable[PHYSICAL_PAGES];
-static CacheEntry writeBuffer[BUFFER_SIZE];
-static SMARTStats stats;
+static FILE* g_nand_f = NULL;
+static FILE* g_result_f = NULL;
+static BlockMeta blockMetaTable[BLOCK_COUNT];
+static int g_current_pba_index = 0;
+static int LtoP[LOGICAL_PAGES];
+static int PtoL[PHYSICAL_PAGES];
+
+void nand_raw_write(int pba, uint32_t data);
+uint32_t nand_raw_read(int pba);
+int get_next_free_pba();
+int ftl_internal_write(int lba, uint32_t data);
+void do_garbage_collection();
+void ssdEraseBlock(int blockIdx);
+
+void nand_raw_write(int pba, uint32_t data) {
+    long offset = (long)pba * LINE_SIZE;
+    fseek(g_nand_f, offset, SEEK_SET);
+    fprintf(g_nand_f, "0x%08X", data);
+}
+
+uint32_t nand_raw_read(int pba) {
+    long offset = (long)pba * LINE_SIZE;
+    char buf[LINE_SIZE];
+    fseek(g_nand_f, offset, SEEK_SET);
+    if (fread(buf, 1, 10, g_nand_f) != 10) return 0;
+    return (uint32_t)strtoul(buf, NULL, 16);
+}
+
+void ssdEraseBlock(int blockIdx) {
+    int startPba = blockIdx * PAGES_PER_BLOCK;
+    int endPba = startPba + PAGES_PER_BLOCK;
+    for (int pba = startPba; pba < endPba; pba++) {
+        nand_raw_write(pba, 0x00000000);
+        PtoL[pba] = PBA_FREE;
+    }
+    blockMetaTable[blockIdx].erase_count++;
+    blockMetaTable[blockIdx].valid_count = 0;
+}
+
+int get_next_free_pba() {
+    int start = g_current_pba_index;
+    do {
+        int pba = g_current_pba_index;
+        g_current_pba_index = (g_current_pba_index + 1) % PHYSICAL_PAGES;
+        if (PtoL[pba] == PBA_FREE) return pba;
+    } while (g_current_pba_index != start);
+    return -1;
+}
+
+int ftl_internal_write(int lba, uint32_t data) {
+    int pba = get_next_free_pba();
+    if (pba == -1) return -1;
+
+    nand_raw_write(pba, data);
+
+    int old_pba = LtoP[lba];
+    if (old_pba != -1) {
+        PtoL[old_pba] = PBA_INVALID;
+        int blk_idx = old_pba / PAGES_PER_BLOCK;
+        if (blockMetaTable[blk_idx].valid_count > 0)
+            blockMetaTable[blk_idx].valid_count--;
+    }
+
+    LtoP[lba] = pba;
+    PtoL[pba] = lba;
+
+    int new_blk_idx = pba / PAGES_PER_BLOCK;
+    blockMetaTable[new_blk_idx].valid_count++;
+
+    return 0;
+}
+
+void do_garbage_collection() {
+    int victim_blk = -1;
+    int min_valid = PAGES_PER_BLOCK + 1;
+    int active_blk = g_current_pba_index / PAGES_PER_BLOCK;
+
+    for (int i = 0; i < BLOCK_COUNT; i++) {
+        if (i == active_blk) continue;
+        if (blockMetaTable[i].valid_count < min_valid) {
+            min_valid = blockMetaTable[i].valid_count;
+            victim_blk = i;
+        }
+    }
+
+    if (victim_blk == -1) return;
+
+    int startPba = victim_blk * PAGES_PER_BLOCK;
+    for (int i = 0; i < PAGES_PER_BLOCK; i++) {
+        int old_pba = startPba + i;
+        int lba = PtoL[old_pba];
+
+        if (lba != -1 && LtoP[lba] == old_pba) {
+            uint32_t data = nand_raw_read(old_pba);
+            if (ftl_internal_write(lba, data) == -1) {
+                printf("[CRITICAL] GC Failed: No Free Space for Migration\n");
+                return;
+            }
+        }
+    }
+    ssdEraseBlock(victim_blk);
+}
 
 void ssdWrite(int lbaNum, uint32_t data) {
-    stats.total_writes++;
+    if (g_nand_f == NULL) ssdInit();
+    if (ftl_internal_write(lbaNum, data) == -1) {
+        do_garbage_collection();
 
-    //buffer에 추가하는 경우
-    /*
-    if (stats.bufferCount < BUFFER_SIZE) {
-        for (int i = 0; i < BUFFER_SIZE; i++) {
-            if (writeBuffer[i].is_dirty == 1 && )
+        if (ftl_internal_write(lbaNum, data) == -1) {
+            printf("[ERROR] Write Failed: SSD Full\n");
+            return;
         }
-    }*/
-
-    if (g_nand_f == NULL) {
-        if (ssdInit() == NOFILE) return;
     }
-
-    int targetLine = lbaNum;
-    long offset = (lbaNum) * (LINE_SIZE);             // PAGE의 주소 * LINE의 길이
-
-    char checkBuf[LINE_SIZE];
-    fseek(g_nand_f, offset, SEEK_SET);
-    fread(checkBuf, 1, 10, g_nand_f);               // 값 부분 10바이트만 읽기
-    fseek(g_nand_f, offset, SEEK_SET);
-
-    uint32_t currentVal = (uint32_t)strtoul(checkBuf, NULL, 16);
-    
-    // overwrite 방지
-    // 추가 개선 사항: STATE table 등 추가
-    if (currentVal != 0x00000000) {
-        printf("[ERROR] Overwrite: LBA %d is not empty (0x%08X).\n", lbaNum, currentVal);
-        return;
-    }
-
-    fprintf(g_nand_f, "0x%08X", data);
     fflush(g_nand_f);
-
-    return;
 }
 
 uint32_t ssdRead(int lbaNum, int isFull) {
-    if (g_nand_f == NULL) {
-        if (ssdInit() == NOFILE) return;
+    if (g_nand_f == NULL) ssdInit();
+
+    int pba = LtoP[lbaNum];
+    uint32_t output = 0;
+
+    if (pba != -1) output = nand_raw_read(pba);
+
+    const char* mode = (isFull == FULLREAD) ? "a" : "w";
+    g_result_f = fopen("result.txt", mode);
+    if (g_result_f) {
+        fprintf(g_result_f, "0x%08X\n", output);
+        fclose(g_result_f);
+        g_result_f = NULL;
     }
-    
-    switch (isFull) {
-    case FULLREAD:
-        g_result_f = fopen("result.txt", "w");
-        break;
-    case SINGLEREAD:
-        g_result_f = fopen("result.txt", "rb+");
-    }
-
-    char line[LINE_SIZE];
-    long offset = lbaNum * (LINE_SIZE);
-
-    fseek(g_nand_f, offset, SEEK_SET);
-
-    if (fread(line, 1, 10, g_nand_f) != 10) return 0;   //읽기 실패
-
-    uint32_t output = (uint32_t)strtoul(line, NULL, 16); // 16진수로 변환
-
-    if (g_result_f != NULL) {
-        fprintf(g_result_f, "0x%08X", output);
-    }
-
     return output;
 }
-
-void ssdErase(int lbaNum) {
-    int start = lbaNum * PAGE_SIZE;
-    int end = start + PAGE_SIZE;
-
-    if (start < 0 || start >= LOGICAL_PAGES) {
-        fprintf(stderr, "EraseError occured: invalid idx %d\n", lbaNum);
-        return EXIT_FAILURE;
-    }
-
-    if (g_nand_f == NULL) {
-        perror("we don't have file: nand.txt\n");
-        return EXIT_FAILURE;
-    }
-
-    for (int i = start; i < end; i++)
-    {
-        if (fseek(g_nand_f, i * LINE_SIZE, SEEK_SET) != 0)
-        {
-            perror("Erase fseek Failed");
-            fclose(g_nand_f);
-            return EXIT_FAILURE;
-        }
-        fprintf(g_nand_f, "0x%08X\n", 0x00000000);
-    }
-    return EXIT_SUCCESS;
-}
-
 
 int ssdInit() {
     if (g_nand_f != NULL) {
@@ -107,38 +140,36 @@ int ssdInit() {
         g_nand_f = NULL;
     }
 
-    //파일을 읽기&쓰기, binary 모드로 열기: window/linux에서 둘 다 동작하도록
-    g_nand_f = fopen("nand.txt", "rb+");
-
-    if (g_nand_f == NULL) {
-        printf("[ERROR] NOFILE\n");
-        return NOFILE;
+    g_nand_f = fopen("nand.txt", "wb+");
+    for (int i = 0; i < PHYSICAL_PAGES; i++) {
+        fprintf(g_nand_f, "0x00000000\n");
     }
+    if (g_nand_f == NULL) return NOFILE;
 
-    //nand 파일 초기화
-    for (int i = 0; i < LOGICAL_PAGES; i++) {
-        fprintf(g_nand_f, "0x00000000\n"); 
-    }
     return INIT_SUCCESS;
 }
 
 int ssdExit() {
-    if (g_nand_f == NULL || g_result_f == NULL) {
-        return NOFILEPTR;
-    }
+    if (g_nand_f == NULL) return 0;
+
     fclose(g_nand_f);
-    fclose(g_result_f);
+    if (g_result_f) fclose(g_result_f);
+
     g_nand_f = NULL;
     g_result_f = NULL;
+    return 0;
 }
 
 void ssdFullWrite(uint32_t data) {
-    for (int i = 0;  i < LOGICAL_PAGES; i++) {
+    for (int i = 0; i < LOGICAL_PAGES; i++) {
         ssdWrite(i, data);
     }
 }
 
 void ssdFullRead() {
+    FILE* fp = fopen("result.txt", "w");
+    if (fp) fclose(fp);
+
     for (int i = 0; i < LOGICAL_PAGES; i++) {
         ssdRead(i, FULLREAD);
     }

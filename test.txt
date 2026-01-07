@@ -1,0 +1,828 @@
+erase
+help
+help
+erase
+write 58 0x69525F90
+erase
+read 27
+read 91
+read 42
+fullread
+write 91 0x390C0F3E
+fullread
+help
+help
+fullread
+erase
+write 71 0x2D12074D
+help
+erase
+read 94
+erase
+fullread
+fullread
+fullread
+read 53
+help
+erase
+help
+fullread
+fullread
+read 23
+fullread
+read 78
+help
+erase
+write 88 0x759A2350
+help
+help
+fullread
+fullread
+help
+write 1 0x5F490DDC
+fullread
+erase
+help
+write 40 0x13661CD0
+erase
+write 39 0x60322C3B
+erase
+write 29 0x409D12E1
+erase
+write 4 0x26CA3699
+erase
+erase
+help
+write 29 0x68993CD5
+fullread
+write 86 0x33EA23C9
+write 55 0x60BF5C67
+help
+erase
+help
+fullread
+help
+help
+help
+fullread
+erase
+fullread
+read 87
+fullread
+fullread
+erase
+read 58
+erase
+help
+help
+fullread
+write 91 0x494A0677
+help
+erase
+erase
+fullread
+read 41
+read 36
+help
+write 21 0x6AD45A9F
+write 84 0x2059127E
+erase
+write 38 0x1AF40ECC
+read 67
+read 48
+read 7
+fullread
+write 17 0x591D252A
+erase
+erase
+erase
+help
+fullread
+help
+write 9 0x3A8D7FBE
+fullread
+read 93
+fullread
+read 87
+help
+erase
+write 58 0x19DA5064
+erase
+read 57
+write 22 0x486A3004
+erase
+erase
+erase
+help
+help
+fullread
+write 72 0x4E574F68
+help
+erase
+read 42
+write 16 0x55797CFE
+fullread
+read 99
+erase
+help
+erase
+fullread
+read 61
+write 1 0x263D3B97
+read 2
+read 82
+read 88
+help
+fullread
+fullread
+help
+erase
+erase
+fullread
+help
+write 25 0x293B0D6A
+read 41
+read 60
+help
+fullread
+erase
+read 96
+read 29
+read 37
+write 49 0x00C15A9B
+fullread
+help
+read 88
+help
+erase
+write 1 0x7A5450BF
+erase
+read 85
+read 12
+erase
+write 21 0x4C665C5E
+help
+read 44
+write 22 0x1BD90871
+fullread
+read 66
+erase
+fullread
+fullread
+write 10 0x128950A9
+help
+fullread
+help
+read 5
+write 91 0x27DA0E29
+erase
+write 34 0x65125F34
+erase
+erase
+write 77 0x456D7E0E
+erase
+erase
+erase
+read 27
+fullread
+read 24
+read 72
+erase
+read 32
+fullread
+erase
+erase
+help
+help
+erase
+fullread
+help
+read 33
+read 60
+erase
+help
+read 24
+erase
+help
+help
+read 66
+help
+fullread
+read 84
+help
+write 19 0x5A700AF0
+fullread
+help
+write 10 0x12957DAA
+erase
+erase
+write 64 0x13F51ECA
+help
+fullread
+read 77
+fullread
+read 29
+read 20
+help
+fullread
+erase
+read 25
+help
+help
+help
+help
+help
+read 71
+fullread
+erase
+help
+write 24 0x75EC5503
+read 62
+erase
+read 58
+help
+read 7
+erase
+write 39 0x08FF31D8
+read 24
+fullread
+erase
+read 50
+write 28 0x32C16AF8
+read 40
+read 4
+read 56
+write 50 0x49873895
+write 16 0x065A248D
+write 57 0x72995AE7
+read 61
+read 12
+fullread
+write 85 0x5DE95F67
+fullread
+read 65
+read 32
+write 55 0x2F154242
+help
+write 72 0x53D13821
+erase
+erase
+read 67
+write 75 0x328A08AF
+write 11 0x58D54ECF
+fullread
+erase
+write 34 0x3B657C27
+write 98 0x570758AD
+read 34
+erase
+write 93 0x27C06469
+write 81 0x012C384D
+fullread
+read 55
+erase
+write 78 0x06D8480B
+write 73 0x27382461
+erase
+help
+fullread
+help
+erase
+erase
+help
+erase
+fullread
+fullread
+help
+read 53
+write 51 0x6874561C
+erase
+fullread
+help
+read 3
+read 75
+help
+write 97 0x448D7374
+read 27
+erase
+erase
+fullread
+fullread
+erase
+read 13
+help
+write 1 0x5B603D8F
+write 28 0x6D7B0FF4
+read 86
+write 70 0x188F5D27
+write 3 0x52E55887
+write 63 0x2332569B
+fullread
+write 64 0x63C61DC3
+fullread
+read 4
+write 32 0x02EE6275
+read 39
+fullread
+help
+fullread
+write 48 0x0B9B45C8
+erase
+erase
+write 69 0x3B9E2147
+erase
+fullread
+write 45 0x63A46E9E
+write 1 0x6EA3528C
+help
+read 70
+fullread
+fullread
+fullread
+erase
+erase
+fullread
+help
+fullread
+fullread
+write 43 0x315D5789
+fullread
+fullread
+read 88
+erase
+help
+write 49 0x322B53B6
+write 48 0x69BB11B8
+erase
+write 85 0x1B7E267D
+fullread
+help
+help
+fullread
+erase
+help
+write 55 0x5B167FD6
+read 25
+fullread
+erase
+help
+erase
+erase
+write 72 0x4FCA390E
+read 29
+help
+fullread
+help
+help
+read 93
+erase
+write 41 0x785E176A
+write 52 0x5D807876
+help
+erase
+fullread
+fullread
+fullread
+read 37
+help
+help
+write 62 0x54822A8D
+fullread
+write 8 0x1C5E56D9
+write 3 0x40FA66BF
+write 48 0x2B74301D
+read 9
+help
+help
+write 58 0x5DF25E5B
+erase
+erase
+fullread
+erase
+fullread
+read 48
+help
+fullread
+write 2 0x1B0B0EF7
+read 78
+fullread
+write 19 0x5DA37533
+fullread
+read 4
+fullread
+erase
+fullread
+help
+erase
+fullread
+write 8 0x26E90F77
+read 15
+fullread
+read 69
+help
+write 71 0x66983B0D
+fullread
+fullread
+fullread
+write 39 0x76047268
+help
+erase
+help
+write 80 0x7477655F
+read 15
+erase
+fullread
+read 32
+help
+fullread
+read 8
+erase
+read 63
+help
+help
+write 71 0x075D55D6
+fullread
+erase
+erase
+erase
+erase
+write 9 0x1255124E
+write 49 0x682B05F8
+fullread
+help
+fullread
+erase
+write 16 0x6C4E6FFA
+erase
+help
+fullread
+help
+fullread
+help
+erase
+help
+erase
+read 45
+help
+read 31
+write 68 0x246615E2
+erase
+fullread
+help
+help
+write 9 0x0FF45C04
+erase
+help
+help
+read 8
+fullread
+read 14
+erase
+help
+erase
+fullread
+fullread
+help
+erase
+write 59 0x7EF26F46
+help
+help
+erase
+help
+write 92 0x32ED0F55
+fullread
+help
+fullread
+write 30 0x726C3908
+write 99 0x47B04FE0
+help
+write 15 0x11DF223A
+fullread
+help
+read 18
+read 28
+fullread
+fullread
+erase
+read 20
+help
+fullread
+help
+erase
+write 61 0x7C0A400E
+help
+write 88 0x4C7121BE
+fullread
+fullread
+erase
+read 15
+help
+write 5 0x24F84C65
+write 61 0x773C3105
+fullread
+write 23 0x6EBE37FD
+erase
+fullread
+help
+read 78
+fullread
+help
+write 64 0x7B674DED
+read 5
+erase
+erase
+help
+write 68 0x4B511BAD
+read 52
+help
+write 26 0x6EEC1D94
+fullread
+write 74 0x498303AF
+read 41
+fullread
+read 65
+read 85
+help
+help
+read 9
+write 66 0x41FD3ECA
+fullread
+write 95 0x25653CE5
+fullread
+help
+help
+fullread
+write 26 0x6F5E28B6
+write 79 0x78BE5C00
+write 91 0x3C871684
+help
+help
+read 60
+write 72 0x68C5660A
+erase
+fullread
+fullread
+fullread
+write 50 0x3FD702F2
+fullread
+help
+fullread
+write 12 0x2622174F
+write 15 0x07744347
+erase
+erase
+erase
+write 0 0x2C67451C
+read 32
+help
+fullread
+erase
+fullread
+write 83 0x694431B3
+write 18 0x39B82404
+read 82
+write 90 0x22DD10E4
+write 77 0x3E612D7B
+help
+erase
+write 91 0x7DC41E67
+help
+erase
+read 97
+read 27
+read 8
+fullread
+help
+fullread
+read 13
+read 50
+write 11 0x5C626DF5
+erase
+fullread
+erase
+erase
+write 1 0x6F1A1439
+erase
+write 64 0x056540CE
+fullread
+erase
+read 95
+fullread
+erase
+write 58 0x1EF6250F
+erase
+read 60
+read 86
+write 10 0x11781BD8
+fullread
+write 3 0x3A136121
+write 81 0x242958DE
+write 98 0x6F2A0A65
+erase
+erase
+read 35
+erase
+write 33 0x20A83412
+write 92 0x30915D20
+help
+read 10
+read 37
+help
+write 69 0x7A0C5522
+write 47 0x4418253F
+write 97 0x5ACB6C01
+read 41
+fullread
+write 48 0x25334D8B
+write 33 0x74C36A40
+write 90 0x64611337
+write 31 0x7F200D0C
+erase
+read 83
+write 92 0x18316E5C
+fullread
+write 34 0x07307B09
+read 29
+help
+read 91
+write 10 0x34ED544A
+fullread
+erase
+read 93
+write 97 0x36027A2C
+write 78 0x2B974FC2
+erase
+erase
+write 80 0x69806D3F
+fullread
+erase
+fullread
+write 74 0x359A3143
+erase
+help
+erase
+write 32 0x636C0AB5
+help
+fullread
+write 96 0x3C645087
+read 36
+write 98 0x69983833
+help
+help
+read 6
+write 41 0x49C262A1
+read 58
+fullread
+erase
+write 16 0x3D3E27C2
+read 58
+read 50
+fullread
+erase
+read 78
+help
+fullread
+read 84
+read 93
+write 72 0x2BEB74E9
+help
+fullread
+read 73
+write 48 0x16132AEA
+write 77 0x67953925
+write 74 0x3DAF3C6D
+help
+help
+fullread
+read 15
+fullread
+read 40
+write 36 0x2167250F
+help
+erase
+write 80 0x3EE10BF9
+erase
+fullread
+write 78 0x373C1203
+fullread
+fullread
+erase
+write 49 0x0D053629
+read 32
+help
+erase
+help
+help
+read 31
+fullread
+fullread
+erase
+help
+read 47
+help
+help
+help
+read 89
+write 86 0x0D7F07EC
+help
+write 53 0x2E017A74
+erase
+fullread
+write 55 0x3775565A
+help
+erase
+read 21
+erase
+help
+write 35 0x2C7006EE
+fullread
+read 22
+fullread
+erase
+erase
+read 80
+write 78 0x193239D1
+read 99
+erase
+help
+read 61
+read 73
+erase
+fullread
+erase
+read 65
+fullread
+fullread
+write 76 0x111D2037
+help
+fullread
+fullread
+erase
+erase
+help
+read 6
+help
+help
+help
+fullread
+help
+write 97 0x792C5C8E
+read 88
+read 84
+erase
+erase
+write 84 0x23D045F2
+read 18
+write 99 0x2E093896
+erase
+help
+read 13
+read 85
+write 80 0x05331C63
+erase
+erase
+read 74
+read 52
+read 68
+read 85
+read 11
+write 77 0x01961E58
+write 13 0x1388021E
+erase
+help
+erase
+fullread
+read 93
+write 87 0x2A09500D
+fullread
+fullread
+help
+erase
+read 4
+write 95 0x34D5760D
+help
+read 72
+write 56 0x0D0F5841
+write 68 0x53A33591
+help
+erase
+read 68
+write 31 0x32855CE3
+erase
+read 36
+read 65
+write 20 0x68D36450
+write 55 0x165D0FE7
+help
+erase
+help
+write 5 0x28C81CCF
+help
+read 62
+write 97 0x79E2290C
+write 40 0x2F2C2362
+erase
+erase
+write 35 0x2B405B68
+erase
+exit
