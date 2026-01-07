@@ -1,7 +1,6 @@
 #include "ssd.h"
-static FILE* g_nand_f = NULL, * g_result_f = NULL;
+static FILE* g_nand_f = NULL;
 
-//overwrite 불가능하게 추가 구현 필요
 void ssdWrite(int lbaNum, uint32_t data) {
     if (g_nand_f == NULL) {
         if (init() == NOFILE) return;
@@ -9,7 +8,21 @@ void ssdWrite(int lbaNum, uint32_t data) {
 
     int targetLine = lbaNum;
     long offset = (lbaNum) * PAGE_SIZE;             // PAGE의 주소 * PAGE의 길이
-    fseek(g_nand_f, offset, SEEK_SET);              // 이동
+
+    char checkBuf[PAGE_SIZE + 1];
+    fseek(g_nand_f, offset, SEEK_SET);
+    fread(checkBuf, 1, 10, g_nand_f);               // 값 부분 10바이트만 읽기
+    fseek(g_nand_f, offset, SEEK_SET);
+    checkBuf[10] = '\0';                            // 문자열 끝 처리
+
+    uint32_t currentVal = (uint32_t)strtol(checkBuf, NULL, 16);
+    
+    // overwrite 방지
+    // 추가 개선 사항: STATE table 등 추가
+    if (currentVal != 0x00000000) {
+        printf("[ERROR] Overwrite: LBA %d is not empty (0x%08X).\n", lbaNum, currentVal);
+        return;
+    }
 
     fprintf(g_nand_f, "0x%08X\n", data);
 
@@ -17,23 +30,29 @@ void ssdWrite(int lbaNum, uint32_t data) {
 }
 
 uint32_t ssdRead(int lbaNum) {
-    if (g_nand_f == NULL || g_result_f == NULL) {
+    if (g_nand_f == NULL) {
         if (init() == NOFILE) return;
     }
 
-    char line[LINE_SIZE]; //읽어온 값
-    int targetLine = lbaNum;
-    long offset = (lbaNum) * PAGE_SIZE;             // PAGE의 주소 * PAGE의 길이
-    fseek(g_nand_f, offset, SEEK_SET);              // 이동
 
-    uint32_t output;
+    char line[PAGE_SIZE + 1];
+    long offset = (long)lbaNum * PAGE_SIZE;
 
-    fread(line, sizeof(char), LINE_SIZE, g_nand_f);
+    fseek(g_nand_f, offset, SEEK_SET);
 
-    //spare txt -> 유효성 검사?
+    if (fread(line, 1, 10, g_nand_f) != 10) return 0;   //읽기 실패
+    line[10] = '\0';
 
-    output = strtol(line, NULL, LINE_SIZE);         //진법 변환
-    fprintf(g_result_f, "0x%08X", output);
+    uint32_t output = (uint32_t)strtol(line, NULL, 16); // 16진수로 변환
+
+    // result.txt에 결과 기록
+    FILE* res_fp = fopen("result.txt", "w");
+    if (res_fp == NULL) { printf("[ERROR] NOFILE: nand.txt\n"); }
+
+    if (res_fp != NULL) {
+        fprintf(res_fp, "0x%08X", output);
+        fclose(res_fp);
+    }
 
     return output;
 }
@@ -42,17 +61,14 @@ uint32_t ssdRead(int lbaNum) {
 int ssdInit() {
     if (g_nand_f != NULL) {
         fclose(g_nand_f);
-    }
-    if (g_result_f != NULL) {
-        fclose(g_result_f);
+        g_nand_f = NULL;
     }
 
     //파일을 읽기&쓰기, binary 모드로 열기: window/linux에서 둘 다 동작하도록
     g_nand_f = fopen("nand.txt", "r+b"); 
-    g_result_f = fopen("result.txt", "r+b");
 
-    if (g_nand_f == NULL || g_result_f == NULL) {
-        perror("NO SUCH FILE: nand.txt\n");
+    if (g_nand_f == NULL) {
+        printf("[ERROR] NOFILE: nand.txt\n");
         return NOFILE;
     }
 
@@ -64,9 +80,8 @@ int ssdInit() {
 }
 
 int ssdExit() {
-    if (g_nand_f == NULL || g_result_f == NULL) {
+    if (g_nand_f == NULL) {
         return NOFILEPTR;
     }
     fclose(g_nand_f);
-    fclose(g_result_f);
 }

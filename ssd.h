@@ -7,8 +7,7 @@
 #define NOFILE		 1
 #define INIT_SUCCESS 2
 
-#define LINE_SIZE	 10
-#define PAGE_SIZE	 11 //0x00000000ÀÇ 10ÀÚ¸® + \n
+#define PAGE_SIZE	 10
 
 void ssdWrite(int lbaNum, uint32_t data);
 uint32_t ssdRead(int lbaNum);
