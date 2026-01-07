@@ -1,21 +1,21 @@
 #include "ssd.h"
+
 static FILE* g_nand_f = NULL;
 
 void ssdWrite(int lbaNum, uint32_t data) {
     if (g_nand_f == NULL) {
-        if (init() == NOFILE) return;
+        if (ssdInit() == NOFILE) return;
     }
 
     int targetLine = lbaNum;
-    long offset = (lbaNum) * PAGE_SIZE;             // PAGE의 주소 * PAGE의 길이
+    long offset = (lbaNum) * (LINE_SIZE);             // PAGE의 주소 * LINE의 길이
 
-    char checkBuf[PAGE_SIZE + 1];
+    char checkBuf[LINE_SIZE];
     fseek(g_nand_f, offset, SEEK_SET);
     fread(checkBuf, 1, 10, g_nand_f);               // 값 부분 10바이트만 읽기
     fseek(g_nand_f, offset, SEEK_SET);
-    checkBuf[10] = '\0';                            // 문자열 끝 처리
 
-    uint32_t currentVal = (uint32_t)strtol(checkBuf, NULL, 16);
+    uint32_t currentVal = (uint32_t)strtoul(checkBuf, NULL, 16);
     
     // overwrite 방지
     // 추가 개선 사항: STATE table 등 추가
@@ -32,19 +32,17 @@ void ssdWrite(int lbaNum, uint32_t data) {
 
 uint32_t ssdRead(int lbaNum) {
     if (g_nand_f == NULL) {
-        if (init() == NOFILE) return;
+        if (ssdInit() == NOFILE) return;
     }
 
-
-    char line[PAGE_SIZE + 1];
-    long offset = (long)lbaNum * PAGE_SIZE;
+    char line[LINE_SIZE];
+    long offset = lbaNum * (LINE_SIZE);
 
     fseek(g_nand_f, offset, SEEK_SET);
 
     if (fread(line, 1, 10, g_nand_f) != 10) return 0;   //읽기 실패
-    line[10] = '\0';
 
-    uint32_t output = (uint32_t)strtol(line, NULL, 16); // 16진수로 변환
+    uint32_t output = (uint32_t)strtoul(line, NULL, 16); // 16진수로 변환
 
     // result.txt에 결과 기록
     FILE* res_fp = fopen("result.txt", "w");
@@ -66,7 +64,7 @@ int ssdInit() {
     }
 
     //파일을 읽기&쓰기, binary 모드로 열기: window/linux에서 둘 다 동작하도록
-    g_nand_f = fopen("nand.txt", "r+b"); 
+    g_nand_f = fopen("nand.txt", "w+b"); 
 
     if (g_nand_f == NULL) {
         printf("[ERROR] NOFILE: nand.txt\n");
