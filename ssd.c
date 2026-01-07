@@ -73,6 +73,33 @@ uint32_t ssdRead(int lbaNum, int isFull) {
     return output;
 }
 
+void ssdErase(int lbaNum) {
+    int start = lbaNum * PAGE_SIZE;
+    int end = start + PAGE_SIZE;
+
+    if (start < 0 || start >= LOGICAL_PAGES) {
+        fprintf(stderr, "EraseError occured: invalid idx %d\n", lbaNum);
+        return EXIT_FAILURE;
+    }
+
+    if (g_nand_f == NULL) {
+        perror("we don't have file: nand.txt\n");
+        return EXIT_FAILURE;
+    }
+
+    for (int i = start; i < end; i++)
+    {
+        if (fseek(g_nand_f, i * LINE_SIZE, SEEK_SET) != 0)
+        {
+            perror("Erase fseek Failed");
+            fclose(g_nand_f);
+            return EXIT_FAILURE;
+        }
+        fprintf(g_nand_f, "0x%08X\n", 0x00000000);
+    }
+    return EXIT_SUCCESS;
+}
+
 
 int ssdInit() {
     if (g_nand_f != NULL) {
