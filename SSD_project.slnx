@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="SSD_project.vcxproj" />
+  <Project Path="SSD_project.vcxproj" Id="9d69432c-d060-440c-8bb5-6c69902e98bb" />
 </Solution>
