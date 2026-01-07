@@ -24,12 +24,18 @@
     <ClCompile Include="random_address.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="gen_test.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ssd.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="random_address.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="gen_test.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

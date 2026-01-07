@@ -127,11 +127,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="gen_test.c" />
     <ClCompile Include="Main.c" />
     <ClCompile Include="random_address.c" />
     <ClCompile Include="ssd.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="gen_test.h" />
     <ClInclude Include="random_address.h" />
     <ClInclude Include="ssd.h" />
   </ItemGroup>

@@ -1,8 +1,22 @@
 #include "ssd.h"
 
 static FILE* g_nand_f = NULL, * g_result_f = NULL;
+static uint32_t DRAM[10];
+static PageMetaData metaTable[PHYSICAL_PAGES];
+static CacheEntry writeBuffer[BUFFER_SIZE];
+static SMARTStats stats;
 
 void ssdWrite(int lbaNum, uint32_t data) {
+    stats.total_writes++;
+
+    //buffer에 추가하는 경우
+    /*
+    if (stats.bufferCount < BUFFER_SIZE) {
+        for (int i = 0; i < BUFFER_SIZE; i++) {
+            if (writeBuffer[i].is_dirty == 1 && )
+        }
+    }*/
+
     if (g_nand_f == NULL) {
         if (ssdInit() == NOFILE) return;
     }
@@ -30,9 +44,17 @@ void ssdWrite(int lbaNum, uint32_t data) {
     return;
 }
 
-uint32_t ssdRead(int lbaNum) {
-    if (g_nand_f == NULL || g_result_f == NULL) {
+uint32_t ssdRead(int lbaNum, int isFull) {
+    if (g_nand_f == NULL) {
         if (ssdInit() == NOFILE) return;
+    }
+    
+    switch (isFull) {
+    case FULLREAD:
+        g_result_f = fopen("result.txt", "w");
+        break;
+    case SINGLEREAD:
+        g_result_f = fopen("result.txt", "rb+");
     }
 
     char line[LINE_SIZE];
@@ -46,7 +68,6 @@ uint32_t ssdRead(int lbaNum) {
 
     if (g_result_f != NULL) {
         fprintf(g_result_f, "0x%08X", output);
-        fclose(g_result_f);
     }
 
     return output;
@@ -58,22 +79,17 @@ int ssdInit() {
         fclose(g_nand_f);
         g_nand_f = NULL;
     }
-    if (g_result_f != NULL) {
-        fclose(g_result_f);
-        g_result_f = NULL;
-    }
 
     //파일을 읽기&쓰기, binary 모드로 열기: window/linux에서 둘 다 동작하도록
-    g_nand_f = fopen("nand.txt", "w+b");
-    g_result_f = fopen("result.txt", "w+b");
+    g_nand_f = fopen("nand.txt", "rb+");
 
-    if (g_nand_f == NULL || g_result_f == NULL) {
+    if (g_nand_f == NULL) {
         printf("[ERROR] NOFILE\n");
         return NOFILE;
     }
 
     //nand 파일 초기화
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < LOGICAL_PAGES; i++) {
         fprintf(g_nand_f, "0x00000000\n"); 
     }
     return INIT_SUCCESS;
@@ -87,4 +103,16 @@ int ssdExit() {
     fclose(g_result_f);
     g_nand_f = NULL;
     g_result_f = NULL;
+}
+
+void ssdFullWrite(uint32_t data) {
+    for (int i = 0;  i < LOGICAL_PAGES; i++) {
+        ssdWrite(i, data);
+    }
+}
+
+void ssdFullRead() {
+    for (int i = 0; i < LOGICAL_PAGES; i++) {
+        ssdRead(i, FULLREAD);
+    }
 }

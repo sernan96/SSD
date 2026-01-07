@@ -29,5 +29,8 @@ int main(void) {
 	ssdWrite(1, 0x00000000);
 	printf("test: %X\n", ssdRead(1));
 
+	ssdFullWrite(0x99999999);
+	ssdFullRead();
+
 	ssdExit();
 }
